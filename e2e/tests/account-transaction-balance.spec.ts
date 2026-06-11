@@ -31,8 +31,6 @@ test.describe('Account → Transaction → Balance', () => {
     }
   });
 
-  // ─── Scenario 1: Single debit reduces balance ──────────────────────────────
-
   test('debit transaction reduces the account balance', async ({
     budgetPage,
     accountPage,
@@ -42,19 +40,15 @@ test.describe('Account → Transaction → Balance', () => {
     const transaction = generateTransactionData({ amount: 75, type: 'debit' });
     createdAccountName = account.name;
 
-    // ── Step 1: Create account ────────────────────────────────────────────────
     await budgetPage.goto();
     await budgetPage.createLocalAccount(account.name, account.initialBalance);
 
-    // Verify the account link appeared in the sidebar
     await expect(
       budgetPage.page.getByRole('link', { name: new RegExp(`^${account.name}`) }),
     ).toBeVisible();
 
-    // ── Step 2: Navigate to the account ──────────────────────────────────────
     await budgetPage.navigateToAccount(account.name);
 
-    // The account heading should match the name we chose
     await expect(accountPage.accountName).toHaveText(account.name);
 
     // Wait for the initial-balance transaction row to confirm the SQLite
@@ -63,17 +57,14 @@ test.describe('Account → Transaction → Balance', () => {
     const initialBalanceText = await accountPage.getBalanceText();
     expect(moneyEquals(parseMoney(initialBalanceText), account.initialBalance)).toBe(true);
 
-    // ── Step 3: Add a debit transaction ───────────────────────────────────────
     await accountPage.clickAddNewTransaction();
     await transactionPage.fill(transaction);
     await transactionPage.save();
 
-    // ── Step 4: Verify the transaction row appeared ────────────────────────────
     // The table now has 2 rows: the initial-balance row + our new transaction
     await accountPage.waitForTransactionCount(2);
     await expect(accountPage.transactionRows).toHaveCount(2);
 
-    // ── Step 5: Verify the balance decreased by the transaction amount ─────────
     const expectedBalance = computeExpectedBalance(account.initialBalance, [transaction]);
     const newBalanceText = await accountPage.getBalanceText();
     const newBalance = parseMoney(newBalanceText);
@@ -82,8 +73,6 @@ test.describe('Account → Transaction → Balance', () => {
     // More readable failure message on mismatch:
     expect(roundMoney(newBalance)).toBe(roundMoney(expectedBalance));
   });
-
-  // ─── Scenario 2: Credit transaction increases balance ─────────────────────
 
   test('credit transaction increases the account balance', async ({
     budgetPage,
@@ -110,8 +99,6 @@ test.describe('Account → Transaction → Balance', () => {
     expect(roundMoney(actual)).toBe(roundMoney(expected));
   });
 
-  // ─── Scenario 3: Multiple transactions accumulate correctly ───────────────
-
   test('multiple transactions reflect the correct running balance', async ({
     budgetPage,
     accountPage,
@@ -129,7 +116,6 @@ test.describe('Account → Transaction → Balance', () => {
     await budgetPage.createLocalAccount(account.name, account.initialBalance);
     await budgetPage.navigateToAccount(account.name);
 
-    // Add all three transactions sequentially
     for (const tx of transactions) {
       await accountPage.clickAddNewTransaction();
       await transactionPage.fill(tx);
@@ -145,8 +131,6 @@ test.describe('Account → Transaction → Balance', () => {
 
     expect(roundMoney(actual)).toBe(roundMoney(expected));
   });
-
-  // ─── Scenario 4: Off-budget account balance ────────────────────────────────
 
   test('off-budget account tracks balance independently from budget', async ({
     budgetPage,
@@ -188,8 +172,6 @@ test.describe('Account → Transaction → Balance', () => {
     expect(roundMoney(actual)).toBe(roundMoney(expected));
   });
 
-  // ─── Scenario 5: Cancel discards an in-progress transaction ───────────────
-
   test('cancelling a new transaction leaves the balance unchanged', async ({
     budgetPage,
     accountPage,
@@ -207,12 +189,10 @@ test.describe('Account → Transaction → Balance', () => {
     await accountPage.waitForTransactionCount(1);
     const balanceBefore = parseMoney(await accountPage.getBalanceText());
 
-    // Open the form, fill it, then cancel
     await accountPage.clickAddNewTransaction();
     await transactionPage.fill(generateTransactionData({ amount: 999, type: 'debit' }));
     await transactionPage.cancel();
 
-    // Only the initial-balance row should be present
     await expect(accountPage.transactionRows).toHaveCount(1);
 
     const balanceAfter = parseMoney(await accountPage.getBalanceText());

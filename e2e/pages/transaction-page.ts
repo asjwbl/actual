@@ -67,7 +67,6 @@ export class TransactionPage extends BasePage {
     await this.page.keyboard.press('Tab');
   }
 
-  /** Fills all provided fields in the `TransactionData` object in tab order: payee → notes → amount. */
   async fill(data: TransactionData): Promise<void> {
     await this.fillPayee(data.payee);
 

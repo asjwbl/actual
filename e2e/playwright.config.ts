@@ -24,7 +24,6 @@ export default defineConfig({
   testDir: './tests',
   outputDir: './test-results',
 
-  /* Run all tests in parallel by default */
   fullyParallel: true,
 
   /* Fail the build on CI if a test.only is accidentally committed */
@@ -46,14 +45,11 @@ export default defineConfig({
     /* Capture trace on first retry to aid debugging */
     trace: 'on-first-retry',
 
-    /* Screenshots only on failure */
     screenshot: 'only-on-failure',
 
-    /* Per-action and navigation timeouts */
     actionTimeout: 15_000,
     navigationTimeout: 30_000,
 
-    /* Inject animation-disable script into every page */
     contextOptions: {
       reducedMotion: 'reduce',
     },
@@ -63,7 +59,6 @@ export default defineConfig({
    * ~45s for the test body actions. The default 30s is too tight. */
   timeout: 60_000,
 
-  /* Global assertion timeout */
   expect: {
     timeout: 10_000,
   },

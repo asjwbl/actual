@@ -12,7 +12,6 @@ export class AccountPage extends BasePage {
   readonly accountMenuButton: Locator;
   readonly addNewTransactionButton: Locator;
   readonly transactionTable: Locator;
-  /** All transaction rows currently rendered in the table. */
   readonly transactionRows: Locator;
 
   constructor(page: Page) {
@@ -25,12 +24,10 @@ export class AccountPage extends BasePage {
     this.transactionRows         = this.transactionTable.getByTestId('row');
   }
 
-  /** Reads the raw text of the account balance element, e.g. "$500.00", "-$75.00". */
   async getBalanceText(): Promise<string> {
     return this.accountBalance.innerText();
   }
 
-  /** Clicks "Add New" to open the inline transaction entry row. */
   async clickAddNewTransaction(): Promise<void> {
     await this.addNewTransactionButton.click();
     await this.getByTestId('new-transaction').waitFor({ state: 'visible' });

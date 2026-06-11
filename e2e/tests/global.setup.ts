@@ -37,14 +37,12 @@ test('save app session state', async ({ page }) => {
     return;
   }
 
-  // Server selection screen — click "Don't use a server"
   const noServerButton = page.getByRole('button', { name: /don't use a server/i });
   await expect(noServerButton).toBeVisible({ timeout: 15_000 });
   await noServerButton.click();
   // Wait for the server-selection screen to go away before saving state
   await expect(noServerButton).toBeHidden({ timeout: 15_000 });
 
-  // Verify we advanced past the server screen (now on budget selection or budget)
   await expect(page).not.toHaveURL(/server/i);
 
   // Save localStorage/sessionStorage so subsequent tests skip this screen

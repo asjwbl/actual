@@ -29,7 +29,6 @@ export class BasePage {
     await this.page.waitForLoadState('domcontentloaded');
   }
 
-  /** Returns a locator scoped to this page. */
   protected locator(selector: string): Locator {
     return this.page.locator(selector);
   }

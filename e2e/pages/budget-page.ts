@@ -50,7 +50,6 @@ export class BudgetPage extends BasePage {
     await fillReactInput(this.getByLabel('Balance'), String(balance));
     await clickReactAriaButton(this.getByRole('button', { name: 'Create', exact: true }));
 
-    // Wait until the sidebar link for this account is rendered
     await this.page
       .getByRole('link', { name: new RegExp(`^${escapeRegExp(name)}`) })
       .waitFor({ state: 'visible' });
@@ -66,7 +65,6 @@ export class BudgetPage extends BasePage {
   }
 }
 
-/** Escapes special regex characters in an account name so it can be used in RegExp. */
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

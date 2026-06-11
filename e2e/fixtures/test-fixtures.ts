@@ -4,20 +4,12 @@ import { AccountPage } from '../pages/account-page';
 import { TransactionPage } from '../pages/transaction-page';
 import { ApiClient } from '../api/api-client';
 
-// ─── Fixture type declarations ────────────────────────────────────────────────
-
 interface TestFixtures {
-  /** BudgetPage instance pre-wired to the current test's page. */
   budgetPage: BudgetPage;
-  /** AccountPage instance pre-wired to the current test's page. */
   accountPage: AccountPage;
-  /** TransactionPage instance pre-wired to the current test's page. */
   transactionPage: TransactionPage;
-  /** ApiClient instance for any available HTTP endpoints. */
   apiClient: ApiClient;
 }
-
-// ─── Extended test object ─────────────────────────────────────────────────────
 
 /**
  * `test` is the Playwright test runner extended with project-specific fixtures.
@@ -64,8 +56,6 @@ export const test = base.extend<TestFixtures>({
 // Re-export expect so spec files have a single import source
 export { expect } from '@playwright/test';
 
-// ─── Internal helpers ─────────────────────────────────────────────────────────
-
 /**
  * Navigates to the app and handles any setup screens.
  *
@@ -82,8 +72,7 @@ export { expect } from '@playwright/test';
 async function navigateToBudget(page: Page): Promise<void> {
   await page.goto('/');
 
-  // Step 1: Server selection screen — wait for React to mount the button.
-  // This screen always appears on fresh contexts (storageState doesn't help).
+  // Always appears on fresh contexts — storageState doesn't persist the server choice.
   const noServerButton = page.getByRole('button', { name: /don't use a server/i });
   const noServerAppeared = await noServerButton
     .waitFor({ state: 'visible', timeout: 10_000 })
@@ -94,7 +83,6 @@ async function navigateToBudget(page: Page): Promise<void> {
     await noServerButton.click();
   }
 
-  // Step 2: Budget selection screen — click "View demo".
   const viewDemoButton = page.getByRole('button', { name: /view demo/i });
   const viewDemoAppeared = await viewDemoButton
     .waitFor({ state: 'visible', timeout: 10_000 })
@@ -105,6 +93,5 @@ async function navigateToBudget(page: Page): Promise<void> {
     await viewDemoButton.click();
   }
 
-  // Wait until we land on the budget or accounts page.
   await page.waitForURL(/\/(budget|accounts)/, { timeout: 30_000 });
 }

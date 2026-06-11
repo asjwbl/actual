@@ -10,9 +10,7 @@ export interface AccountData {
 export interface TransactionData {
   /** Payee name. Free text — will not be matched to an existing payee. */
   payee: string;
-  /** Optional memo / notes. */
   notes?: string;
-  /** Optional budget category name. */
   category?: string;
   /**
    * Absolute dollar amount (always positive).
