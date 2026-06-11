@@ -4,64 +4,35 @@ import { BasePage } from './base-page';
 /**
  * AccountPage represents a single account's detail view at `/accounts/:id`.
  *
- * Responsibilities:
- * - Expose the account name and balance locators
- * - Open the inline "Add New" transaction form
- * - Navigate to transaction rows
- * - Close the account via the account menu
- *
  * Assertions belong in spec files — this class only encapsulates user actions.
  */
 export class AccountPage extends BasePage {
+  readonly accountName: Locator;
+  readonly accountBalance: Locator;
+  readonly accountMenuButton: Locator;
+  readonly addNewTransactionButton: Locator;
+  readonly transactionTable: Locator;
+  /** All transaction rows currently rendered in the table. */
+  readonly transactionRows: Locator;
+
   constructor(page: Page) {
     super(page);
+    this.accountName             = this.getByTestId('account-name');
+    this.accountBalance          = this.getByTestId('account-balance');
+    this.accountMenuButton       = this.getByRole('button', { name: 'Account menu' });
+    this.addNewTransactionButton = this.getByRole('button', { name: 'Add New' });
+    this.transactionTable        = this.getByTestId('transaction-table');
+    this.transactionRows         = this.transactionTable.getByTestId('row');
   }
 
-  // ─── Header locators ────────────────────────────────────────────────────────
-
-  get accountName(): Locator {
-    return this.getByTestId('account-name');
-  }
-
-  get accountBalance(): Locator {
-    return this.getByTestId('account-balance');
-  }
-
-  get accountMenuButton(): Locator {
-    return this.getByRole('button', { name: 'Account menu' });
-  }
-
-  // ─── Transaction list ───────────────────────────────────────────────────────
-
-  get addNewTransactionButton(): Locator {
-    return this.getByRole('button', { name: 'Add New' });
-  }
-
-  get transactionTable(): Locator {
-    return this.getByTestId('transaction-table');
-  }
-
-  /** All transaction rows currently rendered in the table. */
-  get transactionRows(): Locator {
-    return this.transactionTable.getByTestId('row');
-  }
-
-  // ─── Actions ────────────────────────────────────────────────────────────────
-
-  /**
-   * Reads the raw text of the account balance element.
-   * e.g. "$500.00", "-$75.00"
-   */
+  /** Reads the raw text of the account balance element, e.g. "$500.00", "-$75.00". */
   async getBalanceText(): Promise<string> {
     return this.accountBalance.innerText();
   }
 
-  /**
-   * Clicks "Add New" to open the inline transaction entry row.
-   */
+  /** Clicks "Add New" to open the inline transaction entry row. */
   async clickAddNewTransaction(): Promise<void> {
     await this.addNewTransactionButton.click();
-    // Wait for the entry row to appear before returning
     await this.getByTestId('new-transaction').waitFor({ state: 'visible' });
   }
 
@@ -73,8 +44,6 @@ export class AccountPage extends BasePage {
   async waitForTransactionCount(count: number): Promise<void> {
     await this.transactionRows.nth(count - 1).waitFor({ state: 'visible' });
   }
-
-  // ─── Account management ─────────────────────────────────────────────────────
 
   /**
    * Closes the account via the account menu.

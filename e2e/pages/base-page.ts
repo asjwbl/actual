@@ -61,7 +61,7 @@ export class BasePage {
    * Waits until the current URL matches the given pattern.
    * Used to confirm navigation completed before interacting with the new page.
    */
-  async waitForUrl(urlOrRegex: string | RegExp): Promise<void> {
+  protected async waitForUrl(urlOrRegex: string | RegExp): Promise<void> {
     await this.page.waitForURL(urlOrRegex);
   }
 }

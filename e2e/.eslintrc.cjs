@@ -12,13 +12,15 @@ module.exports = {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'playwright'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:playwright/recommended',
   ],
   rules: {
+    // ── TypeScript rules ──────────────────────────────────────────────────────
     // Enforce explicit return types on functions
     '@typescript-eslint/explicit-function-return-type': [
       'error',
@@ -42,12 +44,32 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
+    // Use ?? instead of || for null/undefined guards
+    '@typescript-eslint/prefer-nullish-coalescing': 'error',
+    // Use ?. instead of && chains for member access
+    '@typescript-eslint/prefer-optional-chain': 'error',
+
+    // ── Standard rules ────────────────────────────────────────────────────────
     // No magic numbers (use named constants or test data generators)
     'no-magic-numbers': 'off',
     // Consistent spacing
     'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0 }],
     // Enforce trailing commas
     'comma-dangle': ['error', 'always-multiline'],
+    // Catch accidental console.log left in tests
+    'no-console': 'warn',
+    // Prefer const over let when variable is never reassigned
+    'prefer-const': 'error',
+
+    // ── Playwright rule overrides ─────────────────────────────────────────────
+    // Upgrade from recommended's 'warn' — a focused test must never be committed
+    'playwright/no-focused-test': 'error',
+    // global.setup.ts uses intentional conditional branching inside the setup test
+    // body (server-selection screen detection); this rule is too aggressive there
+    'playwright/no-conditional-in-test': 'off',
+    // react-helpers.ts uses locator.evaluate() intentionally to work around
+    // React Aria DOM detachment under CI load (documented in the file)
+    'playwright/no-eval': 'off',
   },
   ignorePatterns: [
     'node_modules/',

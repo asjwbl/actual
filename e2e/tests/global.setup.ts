@@ -1,9 +1,9 @@
-import { test as setup, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import path from 'path';
 import fs from 'fs';
 
 /**
- * App setup file — matched by the `setup` project in playwright.config.ts.
+ * Global setup file — matched by the `setup` project in playwright.config.ts.
  *
  * Purpose: complete the one-time "server selection" step and persist the
  * resulting localStorage / sessionStorage to `.auth/app-session.json`.
@@ -20,7 +20,7 @@ import fs from 'fs';
 
 const STORAGE_STATE_PATH = path.join(__dirname, '..', '.auth', 'app-session.json');
 
-setup('save app session state', async ({ page }) => {
+test('save app session state', async ({ page }) => {
   // Ensure the .auth directory exists before Playwright tries to write to it
   const authDir = path.dirname(STORAGE_STATE_PATH);
   if (!fs.existsSync(authDir)) {

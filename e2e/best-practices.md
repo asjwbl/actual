@@ -213,6 +213,74 @@ await page.waitForTimeout(2000);
 
 ---
 
+## 11. Test Data Seeding — Why UI, Not API
+
+A common first instinct when writing E2E tests is to seed and clean up test data via a REST API rather than through the UI. In most web applications that approach is faster and more reliable. **Actual Budget is different.** This section explains why, so contributors don't spend time looking for an API that isn't there.
+
+### Architecture
+
+```
+Browser page (React / Playwright)
+  │
+  │  Worker message bus  (private, internal protocol)
+  ▼
+Shared/Direct Worker  ←  loot-core backend
+  │
+  │  absurd-sql / better-sqlite3
+  ▼
+SQLite database  ←  stored in the browser's Origin Private File System (OPFS)
+```
+
+The key constraint: **everything below the message bus is opaque to HTTP**. The OPFS is a sandboxed storage API accessible only to the browser origin that created it. There is no HTTP server that sits in front of the SQLite database.
+
+### What was investigated
+
+| Approach | Result |
+| --- | --- |
+| REST endpoints on the Vite dev server (port 3001) | None exist — it is a pure SPA static server |
+| Sync-server endpoints | File-level sync only (`/sync`, `/sync/upload-user-file`, etc.); no account/transaction CRUD |
+| Worker message bus (`send('api/account-create', ...)`) | Internal protocol — not versioned, not documented for external use, subject to change without notice |
+| `@actual-app/api` Node.js package | Has `createAccount`, `addTransactions`, `deleteAccount` etc. but depends on `better-sqlite3` (native binary) — **cannot run inside a browser Playwright context** |
+
+### The canonical seeding approach
+
+Use page objects via the UI — this is not a workaround, it is the intended architecture:
+
+```typescript
+// Arrange — seed via UI
+const account = generateAccountData({ initialBalance: 500 });
+await budgetPage.goto();
+await budgetPage.createLocalAccount(account.name, account.initialBalance);
+
+// Act
+await budgetPage.navigateToAccount(account.name);
+await accountPage.clickAddNewTransaction();
+await transactionPage.fill(transaction);
+await transactionPage.save();
+
+// Assert
+await expect(accountPage.accountBalance).toHaveText('...');
+
+// Cleanup — teardown via UI (in afterEach)
+await accountPage.closeAccount().catch(() => {});
+```
+
+### Anti-patterns to avoid
+
+```typescript
+// ❌ No REST endpoint exists for this
+await request.post('/api/accounts', { data: { name: 'Test', balance: 500 } });
+
+// ❌ The Worker message bus is private and will break without warning
+await page.evaluate(() => window.__actualBackend.send('api/account-create', { ... }));
+
+// ❌ @actual-app/api cannot run in a browser context
+import * as api from '@actual-app/api';
+await api.createAccount({ name: 'Test' }, 500);
+```
+
+---
+
 ## 10. Adding New Tests
 
 1. Add any required page object methods to the appropriate class under `pages/`.

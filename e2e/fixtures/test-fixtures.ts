@@ -2,7 +2,7 @@ import { test as base, type Page } from '@playwright/test';
 import { BudgetPage } from '../pages/budget-page';
 import { AccountPage } from '../pages/account-page';
 import { TransactionPage } from '../pages/transaction-page';
-import { ApiClient } from '../utils/api-client';
+import { ApiClient } from '../api/api-client';
 
 // ─── Fixture type declarations ────────────────────────────────────────────────
 
@@ -34,7 +34,7 @@ export const test = base.extend<TestFixtures>({
   /**
    * Override `page` to perform app-level setup before each test.
    *
-   * The storageState saved by `app.setup.ts` already contains the
+   * The storageState saved by `global.setup.ts` already contains the
    * server-selection choice (localStorage), so the only remaining setup
    * step is selecting the demo budget when the welcome screen appears.
    */

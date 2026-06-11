@@ -62,7 +62,7 @@ npm test
 ```
 e2e/
 ├── tests/
-│   ├── app.setup.ts                     # storageState setup (runs once, saves server selection)
+│   ├── global.setup.ts                  # storageState setup (runs once, saves server selection)
 │   └── account-transaction-balance.spec.ts  # Core workflow tests
 ├── pages/
 │   ├── base-page.ts                     # Root page object with shared helpers
@@ -70,11 +70,20 @@ e2e/
 │   ├── account-page.ts                  # /accounts/:id — balance, transaction list
 │   └── transaction-page.ts             # Inline transaction entry form
 ├── fixtures/
-│   ├── test-fixtures.ts                 # Extended `test` with page-object fixtures
-│   └── test-data.ts                     # Interfaces + factory functions
+│   └── test-fixtures.ts                 # Extended `test` with page-object fixtures
+├── api/
+│   └── api-client.ts                    # HTTP client for app/server health checks
+├── test-data/
+│   └── test-data.ts                     # Factory functions (generateAccountData, etc.)
+├── interfaces/
+│   ├── api.ts                           # SyncServerHealthResponse
+│   └── test-data.ts                     # AccountData, TransactionData, BudgetMonth
 ├── utils/
-│   ├── api-client.ts                    # HTTP client for app/server health checks
+│   ├── react-helpers.ts                 # fillReactInput, clickReactAriaButton
 │   └── money-utils.ts                   # parseMoney, formatMoney, roundMoney
+├── skills/
+│   ├── playwright-code-review.md
+│   └── interactive-page-object-generator.md
 ├── ai-prompts/
 │   └── README.md                        # Example prompts for AI-assisted test generation
 ├── playwright.config.ts
@@ -92,7 +101,7 @@ e2e/
 
 ### Session setup (storageState)
 
-`tests/app.setup.ts` runs as a separate Playwright project before the main
+`tests/global.setup.ts` runs as a separate Playwright project before the main
 tests. It navigates to the app, completes the one-time server-selection screen
 ("Don't use a server"), and saves the browser's `localStorage` / `sessionStorage`
 to `.auth/app-session.json`. Every subsequent test starts with this state applied,
@@ -130,7 +139,7 @@ Importing from `fixtures/test-fixtures.ts` gives you:
 
 All test data is generated with `Date.now()` timestamps so parallel workers
 never collide on the same account name. Use the factories from
-`fixtures/test-data.ts` and never hard-code entity names in tests.
+`test-data/test-data.ts` and never hard-code entity names in tests.
 
 ---
 

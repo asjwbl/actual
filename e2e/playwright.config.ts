@@ -70,13 +70,13 @@ export default defineConfig({
 
   projects: [
     /**
-     * Setup project: runs app.setup.ts once before any test.
+     * Setup project: runs global.setup.ts once before any test.
      * Saves storageState (localStorage / sessionStorage) so that the
      * "server selection" screen is skipped in every subsequent test.
      */
     {
       name: 'setup',
-      testMatch: /.*\.setup\.ts$/,
+      testMatch: '**/global.setup.ts',
     },
 
     /**

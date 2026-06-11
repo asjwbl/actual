@@ -3,7 +3,7 @@ import {
   generateAccountData,
   generateTransactionData,
   computeExpectedBalance,
-} from '../fixtures/test-data';
+} from '../test-data/test-data';
 import { clickReactAriaButton, fillReactInput } from '../utils/react-helpers';
 import { parseMoney, moneyEquals, roundMoney } from '../utils/money-utils';
 

@@ -1,1 +1,6 @@
 yarn nano-staged
+
+# Run e2e-specific pre-commit checks when e2e/ files are staged
+if git diff --cached --name-only | grep -q "^e2e/"; then
+  (cd "$(git rev-parse --show-toplevel)/e2e" && npx lint-staged)
+fi

@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "ignoreDeprecations": "5.0",
     "lib": ["ES2022", "DOM"],
     "strict": true,
     "noImplicitAny": true,
@@ -21,7 +21,10 @@
     "paths": {
       "@pages/*": ["pages/*"],
       "@fixtures/*": ["fixtures/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@test-data/*": ["test-data/*"],
+      "@api/*": ["api/*"],
+      "@interfaces/*": ["interfaces/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

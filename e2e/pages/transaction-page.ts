@@ -1,6 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 import { BasePage } from './base-page';
-import type { TransactionData } from '../fixtures/test-data';
+import type { TransactionData } from '../interfaces/test-data';
 
 /**
  * TransactionPage encapsulates the inline transaction entry form that appears
@@ -18,47 +18,26 @@ import type { TransactionData } from '../fixtures/test-data';
  * Assertions belong in spec files — this class only encapsulates user actions.
  */
 export class TransactionPage extends BasePage {
+  readonly newTransactionRow: Locator;
+  readonly payeeCell: Locator;
+  readonly notesCell: Locator;
+  readonly categoryCell: Locator;
+  readonly debitCell: Locator;
+  readonly creditCell: Locator;
+  readonly saveButton: Locator;
+  readonly cancelButton: Locator;
+
   constructor(page: Page) {
     super(page);
+    this.newTransactionRow = this.getByTestId('new-transaction');
+    this.payeeCell         = this.newTransactionRow.getByTestId('payee');
+    this.notesCell         = this.newTransactionRow.getByTestId('notes');
+    this.categoryCell      = this.newTransactionRow.getByTestId('category');
+    this.debitCell         = this.newTransactionRow.getByTestId('debit');
+    this.creditCell        = this.newTransactionRow.getByTestId('credit');
+    this.saveButton        = this.getByTestId('add-button');
+    this.cancelButton      = this.getByRole('button', { name: 'Cancel' });
   }
-
-  // ─── Entry row ──────────────────────────────────────────────────────────────
-
-  get newTransactionRow(): Locator {
-    return this.getByTestId('new-transaction');
-  }
-
-  // ─── Field locators (scoped to the entry row) ────────────────────────────────
-
-  get payeeCell(): Locator {
-    return this.newTransactionRow.getByTestId('payee');
-  }
-
-  get notesCell(): Locator {
-    return this.newTransactionRow.getByTestId('notes');
-  }
-
-  get categoryCell(): Locator {
-    return this.newTransactionRow.getByTestId('category');
-  }
-
-  get debitCell(): Locator {
-    return this.newTransactionRow.getByTestId('debit');
-  }
-
-  get creditCell(): Locator {
-    return this.newTransactionRow.getByTestId('credit');
-  }
-
-  get saveButton(): Locator {
-    return this.getByTestId('add-button');
-  }
-
-  get cancelButton(): Locator {
-    return this.getByRole('button', { name: 'Cancel' });
-  }
-
-  // ─── Field actions ───────────────────────────────────────────────────────────
 
   async fillPayee(payee: string): Promise<void> {
     await this.payeeCell.click();
@@ -88,12 +67,7 @@ export class TransactionPage extends BasePage {
     await this.page.keyboard.press('Tab');
   }
 
-  // ─── Composite helpers ───────────────────────────────────────────────────────
-
-  /**
-   * Fills all provided fields in the `TransactionData` object.
-   * Fields are filled in the natural tab order: payee → notes → amount.
-   */
+  /** Fills all provided fields in the `TransactionData` object in tab order: payee → notes → amount. */
   async fill(data: TransactionData): Promise<void> {
     await this.fillPayee(data.payee);
 
@@ -114,9 +88,7 @@ export class TransactionPage extends BasePage {
     await this.newTransactionRow.waitFor({ state: 'hidden' });
   }
 
-  /**
-   * Discards the in-progress transaction without saving.
-   */
+  /** Discards the in-progress transaction without saving. */
   async cancel(): Promise<void> {
     await this.cancelButton.click();
     await this.newTransactionRow.waitFor({ state: 'hidden' });

@@ -35,7 +35,7 @@ that the displayed balance accurately reflects those transactions.
 
 ## Setup & Teardown
 
-**Global setup (`tests/app.setup.ts`)**
+**Global setup (`tests/global.setup.ts`)**
 
 - Navigates to the app and completes the server-selection screen once.
 - Saves `storageState` to `.auth/app-session.json`.
