@@ -81,11 +81,17 @@ export class TransactionPage extends BasePage {
    * Saves the transaction by clicking the add button, then immediately
    * clicks Cancel to dismiss the blank row the form resets to after saving.
    */
-  async save(): Promise<void> {
-    await this.saveButton.click();
+ async save(): Promise<void> {
+  await this.saveButton.click();
+  // If form stays open as a new blank row, dismiss it:
+  const cancelStillVisible = await this.cancelButton
+    .waitFor({ state: 'visible', timeout: 2_000 })
+    .then(() => true).catch(() => false);
+  if (cancelStillVisible) {
     await this.cancelButton.click();
-    await this.newTransactionRow.waitFor({ state: 'hidden' });
   }
+  await this.newTransactionRow.waitFor({ state: 'hidden' });
+}
 
   /** Discards the in-progress transaction without saving. */
   async cancel(): Promise<void> {

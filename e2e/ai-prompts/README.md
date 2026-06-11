@@ -1,7 +1,7 @@
 # AI Prompts
 
 This directory stores example prompts for AI-assisted generation of tests,
-page objects, and fixture extensions.
+page objects, and fixture extensions. In addition to Claude Code–assisted implementation and refactoring, Playwright MCP was used for browser-based validation of workflows and locator stability against the running Actual Budget application.
 
 ---
 
@@ -196,16 +196,52 @@ Explain each fix and why it improves reliability.
 ---
 
 
-## Future Enhancement: Playwright MCP
+## Playwright MCP Validation Prompt
 
-A future improvement would be integrating Playwright MCP for interactive AI-assisted test authoring. The intended workflow would be:
+The following prompt was used with Playwright MCP after implementation to validate the framework against the live Actual Budget UI.
 
-1. Open the app through Playwright MCP.
-2. Ask the AI agent to observe the target workflow.
-3. Capture user actions and stable locators.
-4. Generate or update page objects.
-5. Generate tests using fixtures and hooks.
-6. Run lint and tests through the existing npm scripts.
-7. Review generated code before committing.
+Purpose:
 
-This was intentionally left out of the initial implementation to keep the interview submission focused, stable, and reviewable.
+* Validate workflows against the real application.
+* Verify locator stability.
+* Identify potential flaky interactions.
+* Review page-object alignment with the current UI.
+* Provide an independent browser-based validation pass before submission.
+
+```text
+Use Playwright MCP as a live UI validator.
+
+Application:
+http://localhost:3001
+
+Framework:
+actual/e2e/
+
+Primary test:
+e2e/tests/account-transaction-balance.spec.ts
+
+Validate:
+1. Create Account → Add Transaction → Verify Balance workflow.
+2. Off-budget account workflow.
+3. Cancel transaction workflow.
+4. Locator stability.
+5. Page object alignment with current UI.
+6. Any flaky interactions.
+
+Do not generate new features.
+Do not redesign the framework.
+Do not modify code unless a high-risk issue is found.
+
+Provide:
+- Findings
+- Risk level
+- Recommended fixes
+- Submission readiness
+```
+
+Outcome:
+
+* Critical locators were validated against the live UI.
+* Workflow alignment was confirmed.
+* No blocking issues were identified.
+* The framework was determined to be ready for execution and submission.
