@@ -1,14 +1,14 @@
 # Actual Budget — Standalone E2E Framework
 
 Playwright + TypeScript E2E test suite for [Actual Budget](https://actualbudget.org).
-Lives at `actual/e2e/` and is fully independent from the main monorepo's
-`packages/desktop-client/e2e/` suite.
+This framework lives under `e2e/` and is fully independent from the main monorepo's existing Playwright suite located at `packages/desktop-client/e2e/`.
 
 ---
 
 ## Prerequisites
 
 - Node.js >= 20
+- Docker
 - The Actual Budget dev server running at `http://localhost:3001`
   (start it from the repo root with `docker compose up -d`)
 
@@ -17,15 +17,16 @@ Lives at `actual/e2e/` and is fully independent from the main monorepo's
 ## Quick start
 
 ```bash
-# 1. Install dependencies
-cd actual/e2e
-npm install          # or: yarn / pnpm install
-
-# 2. Install Playwright browsers
-npm run install:browsers
-
-# 3. Start the app (from the repo root, in a separate terminal)
+# 1. Start Actual Budget (from the repo root, in a separate terminal)
 docker compose up -d
+
+# 2. Install E2E dependencies
+# From repository root
+cd e2e
+npm install   
+
+# 3. Install Playwright browsers
+npm run install:browsers
 
 # 4. Run tests
 npm test
